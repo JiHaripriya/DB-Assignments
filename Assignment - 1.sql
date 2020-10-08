@@ -108,17 +108,10 @@ SELECT * FROM Users WHERE Users.email_id = "nishin@qburst.com" AND Users.passwor
 
 -- 3. List all agents first name and last name matching your speciality
 
--- List all the agents
-SELECT Users.first_name, Users.last_name FROM Users WHERE Users.user_id IN 
-(
-	-- Return user id of other users that match wuth given user's specialities
-	SELECT DISTINCT(User_Speciality_Mapping.user_id) FROM User_Speciality_Mapping WHERE User_Speciality_Mapping.speciality_id IN ( 
-		-- Get speciality id of the user
-		SELECT User_Speciality_Mapping.speciality_id FROM Users
-		JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id where Users.user_id = 3
-	) AND User_Speciality_Mapping.user_id != 3
-    
-) AND Users.role_id = 1;
+SELECT Users.first_name, Users.last_name FROM User_Speciality_Mapping 
+JOIN Users ON Users.user_id = User_Speciality_Mapping.user_id WHERE Users.role_id = 1 AND User_Speciality_Mapping.speciality_id 
+IN (SELECT User_Speciality_Mapping.speciality_id FROM User_Speciality_Mapping where User_Speciality_Mapping.user_id = 3) 
+AND  User_Speciality_Mapping.user_id != 3 GROUP BY Users.user_id;
 
 -- 4. List all agents in your Hospital
 SELECT Users.first_name, Users.last_name FROM Users WHERE Users.hospital_id = 101 AND Users.role_id = 1;
@@ -131,23 +124,12 @@ JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id
 JOIN Speciality ON User_Speciality_Mapping.speciality_id = Speciality.speciality_id
 WHERE Users.hospital_id = 101;
 
--- (or)
-SELECT DISTINCT(Speciality.speciality_id), Speciality.speciality_name FROM Speciality 
-JOIN User_Speciality_Mapping ON Speciality.speciality_id = User_Speciality_Mapping.speciality_id 
-WHERE User_Speciality_Mapping.user_id IN (SELECT user_id FROM Users WHERE Users.hospital_id = 101); 
-
 -- 5.2 Count of Agents having each speciality
 SELECT COUNT(User_Speciality_Mapping.user_id), Speciality.speciality_name FROM Users 
 JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id 
 JOIN Speciality ON User_Speciality_Mapping.speciality_id = Speciality.speciality_id
 WHERE Users.hospital_id = 101 AND Users.role_id = 1 
 GROUP BY User_Speciality_Mapping.user_id;
-
--- (or)
-SELECT COUNT(User_Speciality_Mapping.user_id), Speciality.speciality_name FROM Speciality 
-JOIN User_Speciality_Mapping ON Speciality.speciality_id = User_Speciality_Mapping.speciality_id 
-WHERE User_Speciality_Mapping.user_id IN (SELECT user_id FROM Users WHERE Users.hospital_id = 101 AND Users.role_id = 1)
-GROUP BY User_Speciality_Mapping.user_id; 
 
 -- 6. Add one more specialty to you.
 INSERT INTO User_Speciality_Mapping (user_id, speciality_id) VALUES (3, 1001);
