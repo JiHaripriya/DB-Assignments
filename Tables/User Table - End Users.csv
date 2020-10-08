@@ -1,0 +1,7 @@
+user_id,first_name,last_name,role_id,hospital_id,email_id,password
+1,Ananya,Vinod,2,100,ananya@qburst.com,ananya@123
+2,Ann,Susan,2,101,anns@qburst.com,ann@123
+3,Haripriya,Jagannathan,2,101,haripriya@qburst.com,haripriya@123
+4,Nikhil,"Anil Kumar",2,100,nikhilanilkumar@qburst.com,nikhil@123
+5,Sidharth,Sujithlal,2,101,sidharths@qburst.com,sidharth@123
+6,Thejus,Satheesan,2,100,thejuss@qburst.com,thejus@123

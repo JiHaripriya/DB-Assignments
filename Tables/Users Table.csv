@@ -1,0 +1,12 @@
+user_id,first_name,last_name,role_id,hospital_id,email_id,password
+1,Ananya,Vinod,2,100,ananya@qburst.com,ananya@123
+2,Ann,Susan,2,101,anns@qburst.com,ann@123
+3,Haripriya,Jagannathan,2,101,haripriya@qburst.com,haripriya@123
+4,Nikhil,"Anil Kumar",2,100,nikhilanilkumar@qburst.com,nikhil@123
+5,Sidharth,Sujithlal,2,101,sidharths@qburst.com,sidharth@123
+6,Thejus,Satheesan,2,100,thejuss@qburst.com,thejus@123
+7,Priya,Sasidharan,1,100,priyas@qburst.com,priya@123
+8,Arunraj,Saraswathi,1,101,arunrajs@qburst.com,arunraj@123
+9,Sreejith,Mullakkal,1,101,sreejithmullakal@qburst.com,sreejith@123
+10,Nishin,"T N",1,100,nishin@qburst.com,nishin@123
+11,Anusree,Nambiar,1,101,anusree@qburst.com,anusree@123
