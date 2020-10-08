@@ -2,7 +2,7 @@
 Repository for all the DB Assignments
 
 ## Assignment 1
-1. Add data to all table's.
+1. Add data to all tables.
 2. Check if a user nishin@qburst.com/ qburst@23 present or not?
 3. List all agents first name and last name matching your speciality
 4. List all agents in your Hospital

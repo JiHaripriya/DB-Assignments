@@ -127,13 +127,29 @@ SELECT * FROM Users WHERE Users.hospital_id = 101 AND Users.role_id = 1;
 
 -- 5. Show all specialities in your hospital and the count of agents having each speciality
 
---  user hospital = 101 
--- All agents from user's hospital
-SELECT * FROM Users JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id WHERE Users.hospital_id = 101 AND Users.role_id = 1;
+-- 5.1 Display all specialities in user's hospital
+SELECT DISTINCT(User_Speciality_Mapping.speciality_id), Speciality.speciality_name FROM Users 
+JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id 
+JOIN Speciality ON User_Speciality_Mapping.speciality_id = Speciality.speciality_id
+WHERE Users.hospital_id = 101;
 
-SELECT COUNT(User_Speciality_Mapping.user_id), User_Speciality_Mapping.speciality_id
-FROM User_Speciality_Mapping
-GROUP BY User_Speciality_Mapping.speciality_id;
+-- (or)
+SELECT DISTINCT(Speciality.speciality_id), Speciality.speciality_name FROM Speciality 
+JOIN User_Speciality_Mapping ON Speciality.speciality_id = User_Speciality_Mapping.speciality_id 
+WHERE User_Speciality_Mapping.user_id IN (SELECT user_id FROM Users WHERE Users.hospital_id = 101); 
+
+-- 5.2 Count of Agents having each speciality
+SELECT COUNT(User_Speciality_Mapping.user_id), Speciality.speciality_name FROM Users 
+JOIN User_Speciality_Mapping ON Users.user_id = User_Speciality_Mapping.user_id 
+JOIN Speciality ON User_Speciality_Mapping.speciality_id = Speciality.speciality_id
+WHERE Users.hospital_id = 101 AND Users.role_id = 1 
+GROUP BY User_Speciality_Mapping.user_id;
+
+-- (or)
+SELECT COUNT(User_Speciality_Mapping.user_id), Speciality.speciality_name FROM Speciality 
+JOIN User_Speciality_Mapping ON Speciality.speciality_id = User_Speciality_Mapping.speciality_id 
+WHERE User_Speciality_Mapping.user_id IN (SELECT user_id FROM Users WHERE Users.hospital_id = 101 AND Users.role_id = 1)
+GROUP BY User_Speciality_Mapping.user_id; 
 
 -- 6. Add one more specialty to you.
 INSERT INTO User_Speciality_Mapping (user_id, speciality_id) VALUES (3, 1001);
