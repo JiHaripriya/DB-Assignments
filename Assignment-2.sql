@@ -206,7 +206,7 @@ SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs
     )
 );
 
--- 7.2 Providing Day and time slot directly from OP timings table												 -- Only doctors
+-- 7.2 Providing Day and time slot directly from OP timings table
 SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
 	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id = (
 		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=0 AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
