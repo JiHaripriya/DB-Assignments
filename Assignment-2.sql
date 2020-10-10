@@ -113,7 +113,7 @@ SELECT * FROM hospital_staff;
 -- op_timings
 -- Note: 0 = Monday, 1 = Tuesday, 2 = Wednesday, 3 = Thursday, 4 = Friday, 5 = Saturday, 6 = Sunday.
 ALTER TABLE op_timings AUTO_INCREMENT=2001; -- Starts id value from 2001
-INSERT INTO op_timings (op_day, op_day_name, start_time, end_time) VALUES
+INSERT INTO op_timings (op_day, start_time, end_time) VALUES
 (0, "09:00:00", "12:00:00"),
 (1, "14:00:00", "17:00:00"),
 (2, "10:00:00", "20:00:00"),
@@ -135,9 +135,10 @@ INSERT INTO hospital_staff_op_timings (staff_id, op_timing_id) VALUES
 (1003, 2005),
 (1004, 2003),
 (1004, 2004),
-(1004, 2005),
+(1005, 2005),
 (1005, 2007),
-(1005, 2002);
+(1005, 2002),
+(1002, 2008);
 SELECT * FROM hospital_staff_op_timings;
 
 -- patients
@@ -159,7 +160,14 @@ INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, 
 (3004, "2020-10-10", 12, 1002, 2006, "2020-10-09 10:10:40"),
 (3005, "2020-10-11", 14, 1005, 2007, "2020-10-06 16:10:40"),
 (3006, "2020-10-13", 14, 1005, 2002, "2020-10-09 10:16:30"),
-(3002, "2020-10-14", 15, 1004, 2003, "2020-10-08 10:16:30");
+(3002, "2020-10-14", 15, 1004, 2003, "2020-10-08 10:16:30"),
+(3004, "2020-10-19", 15, 1003, 2001, "2020-10-10 10:10:40"), 
+(3002, "2020-10-17", 12, 1002, 2006, "2020-10-10 10:10:40"),
+(3005, "2020-10-18", 14, 1005, 2007, "2020-10-10 16:10:30"),
+(3006, "2020-10-20", 14, 1005, 2002, "2020-10-10 10:06:10"),
+(3002, "2020-10-21", 15, 1004, 2003, "2020-10-10 08:56:20"),
+(3004, "2020-10-19", 15, 1003, 2001, "2020-10-10 11:10:40"), 
+(3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20");
 SELECT * FROM booking;
 
 -- 3. Get the total bookings for a doctor
@@ -216,4 +224,17 @@ LEFT JOIN patients AS p ON b.patient_id = p.patient_id
 LEFT JOIN users AS u ON p.user_id = u.user_id WHERE b.staff_id = 1005 AND b.booking_date="2020-10-13" ORDER BY b.booking_time DESC;
 
 -- 9. Get doctors count in each department
+SELECT COUNT(h.staff_id) , d.dept_name FROM hospital_staff AS h 
+JOIN department AS d ON h.dept_id = d.dept_id
+GROUP BY h.dept_id;
 
+-- 10. Get each “OP time” booking count in each department for a given date
+SELECT COUNT(b.op_timing_id), b.dept_id FROM booking AS b WHERE b.booking_date="2020-10-19" GROUP BY b.dept_id;
+
+-- 11. Update the doctors qualification
+UPDATE hospital_staff SET qualification="MBBS, M.D(Medicine), DM(Cardiology), PhD" WHERE user_id=108;
+SELECT * FROM hospital_staff;
+
+-- 12. Remove/Delete a booking
+DELETE FROM booking WHERE booking_id = 1000002;
+SELECT * FROM booking;

@@ -1,0 +1,12 @@
+user_id,first_name,last_name,phone_number,password,role_id
+101,Ananya,Vinod,6234567899,ananya@123,1
+102,Ann,Susan,6234567899,ann@123,1
+103,Haripriya,Jagannathan,6234567899,haripriya@123,1
+104,Nikhil,"Anil Kumar",6234567899,nikhil@123,1
+105,Sidharth,Sujithlal,6234567899,sidharth@123,1
+106,Thejus,Satheesan,6234567899,thejus@123,1
+107,Priya,Sasidharan,6234567899,priya@123,2
+108,Arunraj,Saraswathi,6234567899,arunraj@123,2
+109,Sreejith,Mullakkal,6234567899,sreejith@123,2
+110,Nishin,"T N",6234567899,nishin@123,2
+111,Anusree,Nambiar,6234567899,anusree@123,2
