@@ -1,7 +1,5 @@
-CREATE DATABASE assignment2;
-USE assignment2;
-
--- 1. Create tables for designed database
+CREATE DATABASE assignment2A;
+USE assignment2A;
 
 CREATE TABLE roles (
   role_id int not null auto_increment,
@@ -38,25 +36,22 @@ CREATE TABLE hospital_staff (
 
 CREATE TABLE op_timings (
   op_timing_id int not null auto_increment,
-  op_day int,
+  op_day varchar(10),
   start_time time,
   end_time time,
   PRIMARY KEY (op_timing_id)
 );
+
+-- To solve: Error Code: 1267. Illegal mix of collations (latin1_swedish_ci,IMPLICIT) and (utf8mb4_general_ci,COERCIBLE) for operation '='
+SET collation_connection = 'utf8_general_ci';
+ALTER DATABASE assignment2a CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE op_timings CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE hospital_staff_op_timings (
   staff_id int,
   op_timing_id int,
   FOREIGN KEY (staff_id) REFERENCES hospital_staff (staff_id),
   FOREIGN KEY (op_timing_id) REFERENCES op_timings (op_timing_id)
-);
-
-CREATE TABLE patients (
-  patient_id int not null auto_increment,
-  user_id int,
-  status char(2),
-  PRIMARY KEY (patient_id),
-  FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE booking (
@@ -74,7 +69,6 @@ CREATE TABLE booking (
   FOREIGN KEY (op_timing_id) REFERENCES op_timings (op_timing_id)
 );
 
--- 2. Create master data for each tables
 -- roles
 INSERT INTO roles (role_id, role_name) VALUES (1, "Patient");
 INSERT INTO roles (role_name) VALUES ("Doctor");
@@ -111,17 +105,17 @@ INSERT INTO hospital_staff (user_id, dept_id, qualification) VALUES
 SELECT * FROM hospital_staff;
 
 -- op_timings
--- Note: 0 = Monday, 1 = Tuesday, 2 = Wednesday, 3 = Thursday, 4 = Friday, 5 = Saturday, 6 = Sunday.
 ALTER TABLE op_timings AUTO_INCREMENT=2001; -- Starts id value from 2001
 INSERT INTO op_timings (op_day, start_time, end_time) VALUES
-(0, "09:00:00", "12:00:00"),
-(1, "14:00:00", "17:00:00"),
-(2, "10:00:00", "20:00:00"),
-(3, "11:00:00", "14:00:00"),
-(4, "09:00:00", "18:00:00"),
-(5, "14:00:00", "18:00:00"),
-(6, "10:00:00", "14:00:00"),
-(0, "16:00:00", "20:00:00");
+("Monday", "09:00:00", "12:00:00"),
+("Tuesday", "14:00:00", "17:00:00"),
+("Wednesday", "10:00:00", "20:00:00"),
+("Thursday", "11:00:00", "14:00:00"),
+("Friday", "09:00:00", "18:00:00"),
+("Saturday", "14:00:00", "18:00:00"),
+("Sunday", "10:00:00", "14:00:00"),
+("Monday", "16:00:00", "20:00:00");
+SELECT * FROM op_timings;
 
 -- hospital_staff_op_timings
 INSERT INTO hospital_staff_op_timings (staff_id, op_timing_id) VALUES
@@ -140,18 +134,6 @@ INSERT INTO hospital_staff_op_timings (staff_id, op_timing_id) VALUES
 (1002, 2008);
 SELECT * FROM hospital_staff_op_timings;
 
--- patients
-ALTER TABLE patients AUTO_INCREMENT=3001;
-ALTER TABLE patients ADD CONSTRAINT chk_status CHECK ( status IN ('IP','OP'));
-INSERT INTO patients (user_id, status) VALUES
-(101, "IP"),
-(102, "OP"),
-(103, "IP"),
-(104, "OP"),
-(105, "OP"),
-(106, "OP");
-SELECT * FROM patients;
-
 -- booking
 ALTER TABLE booking AUTO_INCREMENT=1000001;
 INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, booking_time) VALUES
@@ -169,67 +151,19 @@ INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, 
 (3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20");
 SELECT * FROM booking;
 
--- 3. Get the total bookings for a doctor
--- 3.1 For a particular doctor
-SELECT COUNT(booking.staff_id), booking.staff_id, users.first_name, users.last_name FROM booking 
-LEFT JOIN hospital_staff ON booking.staff_id = hospital_staff.staff_id
-LEFT JOIN users ON hospital_staff.user_id = users.user_id WHERE booking.staff_id = 1005;
-
--- 3.2 For each doctor
-SELECT COUNT(booking.patient_id), booking.staff_id, users.first_name, users.last_name FROM booking 
-LEFT JOIN hospital_staff ON booking.staff_id = hospital_staff.staff_id
-LEFT JOIN users ON hospital_staff.user_id = users.user_id GROUP BY booking.staff_id;
-
--- 4. List all the doctors when we provide department Id
-SELECT h.staff_id, h.dept_id, h.qualification, u.first_name, u.last_name, u.phone_number FROM hospital_staff AS h 
-LEFT JOIN users AS u ON h.user_id = u.user_id 
-WHERE u.role_id = 2 AND h.dept_id = 15; -- Same output is obtained without role_id as we only have doctors in the table
-
--- 5. List all patients based on consulted doctor
-SELECT b.patient_id, u.first_name, u.last_name FROM booking AS b 
-LEFT JOIN patients AS p ON b.patient_id = p.patient_id  -- to get user id of patient to display name
-LEFT JOIN users AS u ON p.user_id = u.user_id
-WHERE b.staff_id = 1005;
-
--- 6. List all bookings with patient and doctor details
-SELECT * FROM booking AS b 
-JOIN patients as p ON b.patient_id = p.patient_id
-JOIN hospital_staff AS h ON b.staff_id = h.staff_id ORDER BY b.booking_time DESC;
-
--- 7. List all available doctors for a given booking date
--- 7.1 Without providing Day or time slot: Gives doctors working at any OP timing for a given booking_date
-SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN ( -- Staff working during op_timing
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = ( 
-			SELECT DISTINCT(WEEKDAY(b.booking_date)) FROM booking as b WHERE b.booking_date = "2020-10-12"
-        )
-    )
-);
-
--- 7.2 Providing Day and time slot directly from OP timings table												 -- Only doctors
+-- 7. List all doctors available for a particular booking date by providing Day and time slot	
+-- 7.1 Using Timings table directly and by providing day name														
 SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
 	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id = (
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=0 AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
+		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day="Monday" AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
 	)
 );
 
--- 8. Get OP list for a doctor for tomorrow's consultation with booking priority(token)
-SELECT b.patient_id, u.first_name, u.last_name FROM booking AS b 
-LEFT JOIN patients AS p ON b.patient_id = p.patient_id
-LEFT JOIN users AS u ON p.user_id = u.user_id WHERE b.staff_id = 1005 AND b.booking_date="2020-10-13" ORDER BY b.booking_time DESC LIMIT 2;
-
--- 9. Get doctors count in each department
-SELECT COUNT(h.staff_id) , d.dept_name FROM hospital_staff AS h 
-JOIN department AS d ON h.dept_id = d.dept_id
-GROUP BY h.dept_id;
-
--- 10. Get each “OP time” booking count in each department for a given date
-SELECT COUNT(b.op_timing_id), b.dept_id FROM booking AS b WHERE b.booking_date="2020-10-19" GROUP BY b.dept_id;
-
--- 11. Update the doctors qualification
-UPDATE hospital_staff SET qualification="MBBS, M.D(Medicine), DM(Cardiology), PhD" WHERE user_id=108;
-SELECT * FROM hospital_staff;
-
--- 12. Remove/Delete a booking
-DELETE FROM booking WHERE booking_id = 1000002;
-SELECT * FROM booking;
+-- 7.2 Using Day name and time slot
+SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
+	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN ( -- Staff working during op_timing
+		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = ( 
+			SELECT DISTINCT(DAYNAME(b.booking_date)) FROM booking as b WHERE DAYNAME(b.booking_date) = "Monday"
+        ) AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
+    )
+);
