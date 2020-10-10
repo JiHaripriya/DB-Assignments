@@ -123,7 +123,6 @@ INSERT INTO op_timings (op_day, start_time, end_time) VALUES
 (6, "10:00:00", "14:00:00"),
 (0, "16:00:00", "20:00:00");
 
-
 -- hospital_staff_op_timings
 INSERT INTO hospital_staff_op_timings (staff_id, op_timing_id) VALUES
 (1001, 2005),
@@ -198,23 +197,20 @@ JOIN patients as p ON b.patient_id = p.patient_id
 JOIN hospital_staff AS h ON b.staff_id = h.staff_id ORDER BY b.booking_time DESC;
 
 -- 7. List all available doctors for a given booking date
--- 7.1 Without providing Day or time slot
+-- 7.1 Without providing Day or time slot: Gives doctors working at any OP timing for a given booking_date
 SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN (
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day IN (
-        SELECT DISTINCT(WEEKDAY(b.booking_date)) FROM booking as b WHERE b.booking_date = "2020-10-12"
+	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN ( -- Staff working during op_timing
+		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = ( -- Get OP timings for booking_date
+			SELECT DISTINCT(WEEKDAY(b.booking_date)) FROM booking as b WHERE b.booking_date = "2020-10-12"
         )
     )
 );
+SELECT * FROM hospital_staff as h JOIN users as u on h.user_id = u.user_id JOIN booking as b ON h.staff_id = b.staff_id;
 
--- 7.2 Providing Day and time slot
-DROP FUNCTION IF EXISTS DAYNUMBER;
-CREATE FUNCTION daynumber(num INT) RETURNS VARCHAR(10)
-RETURN elt(num+1, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-																												 -- Only doctors
+-- 7.2 Providing Day and time slot																				 -- Only doctors
 SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN (
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=daynumber(0) AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
+	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id = (
+		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=0 AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
 	)
 );
 
