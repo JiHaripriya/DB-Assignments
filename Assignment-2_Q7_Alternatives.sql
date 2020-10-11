@@ -151,19 +151,13 @@ INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, 
 (3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20");
 SELECT * FROM booking;
 
--- 7. List all doctors available for a particular booking date by providing Day and time slot	
--- 7.1 Using Timings table directly and by providing day name														
-SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id = (
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day="Monday" AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
-	)
-);
+-- 7. List all doctors available for a particular booking date 
+-- 7.1 Without providing day name and time slot													
+SELECT u.first_name, u.last_name FROM hospital_staff_op_timings AS h LEFT JOIN hospital_staff as hs ON h.staff_id = hs.staff_id
+LEFT JOIN users AS u ON hs.user_id = u.user_id WHERE h.op_timing_id  IN 
+(SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = DAYNAME("2020-10-12"));
 
 -- 7.2 Using Day name and time slot
-SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN ( -- Staff working during op_timing
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = ( 
-			SELECT DISTINCT(DAYNAME(b.booking_date)) FROM booking as b WHERE DAYNAME(b.booking_date) = "Monday"
-        ) AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
-    )
-);
+SELECT u.first_name, u.last_name FROM hospital_staff_op_timings AS h LEFT JOIN hospital_staff as hs ON h.staff_id = hs.staff_id
+LEFT JOIN users AS u ON hs.user_id = u.user_id WHERE h.op_timing_id =
+(SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = "Monday" AND o.start_time ="09:00:00" AND o.end_time = "12:00:00");

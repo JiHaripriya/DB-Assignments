@@ -166,7 +166,9 @@ INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, 
 (3006, "2020-10-20", 14, 1005, 2002, "2020-10-10 10:06:10"),
 (3002, "2020-10-21", 15, 1004, 2003, "2020-10-10 08:56:20"),
 (3004, "2020-10-19", 15, 1003, 2001, "2020-10-10 11:10:40"), 
-(3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20");
+(3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20"),
+(3006, "2020-10-19", 12, 1004, 2008, "2020-10-11 08:56:20"),
+(3004, "2020-10-19", 12, 1004, 2008, "2020-10-11 12:56:20");
 SELECT * FROM booking;
 
 -- 3. Get the total bookings for a doctor
@@ -198,20 +200,15 @@ JOIN hospital_staff AS h ON b.staff_id = h.staff_id ORDER BY b.booking_time DESC
 
 -- 7. List all available doctors for a given booking date
 -- 7.1 Without providing Day or time slot: Gives doctors working at any OP timing for a given booking_date
-SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id IN ( -- Staff working during op_timing
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = ( 
-			SELECT DISTINCT(WEEKDAY(b.booking_date)) FROM booking as b WHERE b.booking_date = "2020-10-12"
-        )
-    )
-);
+SELECT u.first_name, u.last_name FROM hospital_staff_op_timings AS h LEFT JOIN hospital_staff as hs ON h.staff_id = hs.staff_id
+LEFT JOIN users AS u ON hs.user_id = u.user_id WHERE h.op_timing_id  IN 
+(SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day = WEEKDAY("2020-10-12"));
 
 -- 7.2 Providing Day and time slot directly from OP timings table
-SELECT u.first_name, u.last_name FROM users AS u RIGHT JOIN hospital_staff as hs ON u.user_id = hs.user_id  WHERE u.role_id = 2 AND hs.staff_id IN (
-	SELECT h.staff_id FROM hospital_staff_op_timings AS h WHERE h.op_timing_id = (
-		SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=0 AND o.start_time ="09:00:00" AND o.end_time = "12:00:00"
-	)
-);
+-- Note: 0 = Monday, 1 = Tuesday, 2 = Wednesday, 3 = Thursday, 4 = Friday, 5 = Saturday, 6 = Sunday.
+SELECT u.first_name, u.last_name FROM hospital_staff_op_timings AS h LEFT JOIN hospital_staff as hs ON h.staff_id = hs.staff_id
+LEFT JOIN users AS u ON hs.user_id = u.user_id WHERE h.op_timing_id = 
+(SELECT o.op_timing_id FROM op_timings AS o WHERE o.op_day=0 AND o.start_time ="09:00:00" AND o.end_time = "12:00:00");
 
 -- 8. Get OP list for a doctor for tomorrow's consultation with booking priority(token)
 SELECT b.patient_id, u.first_name, u.last_name FROM booking AS b 
@@ -223,8 +220,8 @@ SELECT COUNT(h.staff_id) , d.dept_name FROM hospital_staff AS h
 JOIN department AS d ON h.dept_id = d.dept_id
 GROUP BY h.dept_id;
 
--- 10. Get each “OP time” booking count in each department for a given date
-SELECT COUNT(b.op_timing_id), b.dept_id FROM booking AS b WHERE b.booking_date="2020-10-19" GROUP BY b.dept_id;
+-- 10. Get each “OP time” booking count in each department for a given date (..each timing)
+SELECT b.op_timing_id, b.dept_id, COUNT(*) FROM booking AS b WHERE b.booking_date="2020-10-19" GROUP BY b.op_timing_id, b.dept_id;
 
 -- 11. Update the doctors qualification
 UPDATE hospital_staff SET qualification="MBBS, M.D(Medicine), DM(Cardiology), PhD" WHERE user_id=108;
