@@ -168,7 +168,7 @@ INSERT INTO booking (patient_id, booking_date, dept_id, staff_id, op_timing_id, 
 (3004, "2020-10-19", 15, 1003, 2001, "2020-10-10 11:10:40"), 
 (3002, "2020-10-19", 12, 1004, 2008, "2020-10-10 08:56:20"),
 (3006, "2020-10-19", 12, 1004, 2008, "2020-10-11 08:56:20"),
-(3004, "2020-10-19", 12, 1004, 2008, "2020-10-11 12:56:20");
+(3004, "2020-10-19", 12, 1004, 2001, "2020-10-11 12:56:20");
 SELECT * FROM booking;
 
 -- 3. Get the total bookings for a doctor
@@ -220,8 +220,14 @@ SELECT COUNT(h.staff_id) , d.dept_name FROM hospital_staff AS h
 JOIN department AS d ON h.dept_id = d.dept_id
 GROUP BY h.dept_id;
 
--- 10. Get each “OP time” booking count in each department for a given date (..each timing)
-SELECT b.op_timing_id, b.dept_id, COUNT(*) FROM booking AS b WHERE b.booking_date="2020-10-19" GROUP BY b.op_timing_id, b.dept_id;
+-- 10. Get each “OP time” booking count in each department for a given date 
+SELECT d.dept_name, SUM(total_bookings) AS total_bookings, SUM(op1) AS Op_timing_1, SUM(op2) AS Op_timing_2 FROM (
+	SELECT b.dept_id as depts, COUNT(*) AS total_bookings,
+	COUNT(IF(b.op_timing_id=2001,1,null)) AS op1,
+	COUNT(IF(b.op_timing_id=2008,1,null)) AS op2
+	FROM booking AS b 
+	WHERE b.booking_date="2020-10-19" GROUP BY b.dept_id, b.op_timing_id
+) AS result LEFT JOIN department AS d ON result.depts = d.dept_id GROUP BY result.depts;
 
 -- 11. Update the doctors qualification
 UPDATE hospital_staff SET qualification="MBBS, M.D(Medicine), DM(Cardiology), PhD" WHERE user_id=108;
