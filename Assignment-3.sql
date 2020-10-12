@@ -170,7 +170,7 @@ SELECT ep.project_id AS project_id, p.name AS name, COUNT(*) as Resources FROM e
 LEFT JOIN projects AS p ON ep.project_id = p.project_id GROUP BY ep.project_id, p.name ORDER BY Resources DESC;
 
 -- 6. Extend the development duration of "Big Basket" by one month. 
-UPDATE projects SET end_date =  DATE_ADD(end_date, INTERVAL 2 MONTH) WHERE project_id = 1;
+UPDATE projects SET end_date =  DATE_ADD(end_date, INTERVAL 1 MONTH) WHERE project_id = 1;
 
 -- 7. Release the designers from the project "Big Basket"
 DELETE ep FROM employee_project_mapping AS ep 
