@@ -1,22 +1,17 @@
 # DB-Assignments
 Repository for all the DB Assignments
 
-## Assignment 2
-1. Design a database for above requirements
-2. Create master data for each tables
-3. Get the total bookings for a doctor
-4. List all the doctors when we provide department Id
-5. List all patients based on consulted doctor
->- Doctor Id will be provided
-6. List all bookings with patient and doctor details
->- Sort data based on latest booking
-7. List all available doctors for a given booking date
->- Provide day(Monday, Tuesday, Wednesday, etc)
->- Provide a Time slot based on op_timing master data"
-8. Get OP list for a doctor for tomorrow's consultation with booking priority(token)
->- Limit the list with latest two data
->- Doctor Id and booking date will be provided
-9. Get doctors count in each department
-10. Get each “OP time” booking count in each department for a given date
-11. Update the doctors qualification
-12. Remove/Delete a booking
+## Assignment 3
+
+1. Add some employees with their role ("Project Manager", "Developer", "Designer" & "Tester"), according to the skills they have. 
+2. Create a project called "Big Basket" under the PM "Mohan Roy". And assign 2 developers, 1 Designer and 1 Tester to that project.
+3. List all the project managers in the company.
+4. Get the count of  employees working as Developer in the project "Big Basket"
+5. Get the list of  projects, with total number resources in the descending order
+6. Extend the development duration of "Big Basket" by one month. 
+7. Release the designers from the project "Big Basket"
+8. Get the skill set of employees working with Big Basket.
+9. Get  the list of employees (separated by commas. eg: Raju, Anju, Geetha) associated with each project
+10. List the employees name in an order where the most skilled (total number of skills) employee comes first.  Show their skill count in each type (Framework & Language).
+11. List employee names who don't have any allocation yet.
+12. Update all project names with underscore.
