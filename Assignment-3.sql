@@ -106,9 +106,9 @@ CREATE TABLE IF NOT EXISTS `assignment3`.`employee_project_mapping` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
--- ============================================================================================
+-- =======================================================================================================================================================================
 -- 										DATA EXERCISES
--- ============================================================================================
+-- =======================================================================================================================================================================
 
 -- Specify roles
 INSERT INTO roles (name) VALUES ("Project Manager"), ("Developer"), ("Designer"), ("Tester");
@@ -122,7 +122,7 @@ INSERT INTO skills (type, name) VALUES
 -- 1. Add some employees with their role ("Project Manager", "Developer", "Designer" & "Tester"), according to the skills they have. 
 INSERT INTO employee (name, role_id) VALUES 
 ("Nishin T. N", 1), ("Mohan Roy", 1),
-("J. Haripriya", 2), ("Nikhil Anil Kumar", 2), ("Ann Susan Baiju", 2),
+("J. Haripriya", 2), ("Nikhil Anil Kumar", 2), ("Ann Susan Baiju", 2), ("Ananya Vinod", 2),
 ("Thejus Satheesan", 3), ("Sidharth Sujithlal", 3),
 ("Aneesha Mariam Kunjumon", 4), ("Aparna Krishnakumar", 4);
 
@@ -146,3 +146,54 @@ SELECT COUNT(e.emp_id) AS Big_Basket_Dev_Count FROM employee_project_mapping AS 
 LEFT JOIN employee AS e ON ep.emp_id = e.emp_id
 WHERE ep.project_id = (SELECT project_id FROM projects WHERE name="Big Basket")  -- project id
 AND e.role_id=2;
+
+-- 5. Get the list of projects, with total number resources in the descending order
+
+-- 5.1 Adding more data: Projects and Resource Allocation
+INSERT INTO projects (name, owner, start_date, end_date) VALUES
+("Gardener", 1 , "2020-10-12", "2020-12-18");
+INSERT INTO employee_project_mapping (emp_id, project_id) VALUES
+(4, 2), (5, 2), -- developer
+(6, 2), (7, 2), -- designer
+(9, 2); -- tester
+
+-- 5.2 Adding skillset to each Employee
+INSERT INTO employee_skill_mapping (emp_id, skill_id) VALUES
+(3, 1), (3, 4), (3, 5), 
+(5, 1), (5, 5), (5, 8), 
+(6, 4),
+(7, 3), (7, 8),
+(8, 5);
+
+-- 5.3 Resouces = Employees working on a project
+SELECT name AS Project_Name, COUNT(*) AS Resources FROM
+(
+SELECT ep.project_id AS project_id, p.name AS name FROM employee_project_mapping as ep 
+LEFT JOIN projects AS p ON ep.project_id = p.project_id
+) AS result
+GROUP BY project_id, name ORDER BY Resources DESC;
+
+-- 6. Extend the development duration of "Big Basket" by one month. 
+UPDATE projects SET end_date =  DATE_ADD(end_date, INTERVAL 2 MONTH) WHERE project_id = 1;
+
+-- 7. Release the designers from the project "Big Basket"
+DELETE FROM employee_project_mapping WHERE project_id = 1;
+
+-- 8. Get the skill set of employees working with Big Basket.
+SELECT emp_list.emp_id, emp_list.Name, skill_list.Skillset 
+FROM ( -- Employee Name and id
+	SELECT ep.emp_id, e.name AS Name FROM employee_project_mapping AS ep 
+	LEFT JOIN employee AS e ON ep.emp_id = e.emp_id WHERE ep.project_id = 1 
+) AS emp_list
+LEFT JOIN ( -- Employee id and employee skills
+	SELECT es.emp_id, GROUP_CONCAT(s.name) AS Skillset FROM employee_skill_mapping AS es 
+	LEFT JOIN skills AS s ON es.skill_id = s.skill_id GROUP BY es.emp_id
+) AS skill_list ON emp_list.emp_id = skill_list.emp_id;
+
+-- 9. Get  the list of employees (separated by commas. eg: Raju, Anju, Geetha) associated with each project
+
+-- 10. List the employees name in an order where the most skilled (total number of skills) employee comes first.  Show their skill count in each type (Framework & Language).
+
+-- 11. List employee names who don't have any allocation yet.
+
+-- 12. Update all project names with underscore.
