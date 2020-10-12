@@ -166,20 +166,17 @@ INSERT INTO employee_skill_mapping (emp_id, skill_id) VALUES
 (8, 5);
 
 -- 5.3 Resouces = Employees working on a project
-SELECT name AS Project_Name, COUNT(*) AS Resources FROM
-(
-SELECT ep.project_id AS project_id, p.name AS name FROM employee_project_mapping as ep 
-LEFT JOIN projects AS p ON ep.project_id = p.project_id
-) AS result
-GROUP BY project_id, name ORDER BY Resources DESC;
+SELECT ep.project_id AS project_id, p.name AS name, COUNT(*) as Resources FROM employee_project_mapping as ep 
+LEFT JOIN projects AS p ON ep.project_id = p.project_id GROUP BY ep.project_id, p.name ORDER BY Resources DESC;
 
 -- 6. Extend the development duration of "Big Basket" by one month. 
 UPDATE projects SET end_date =  DATE_ADD(end_date, INTERVAL 2 MONTH) WHERE project_id = 1;
 
 -- 7. Release the designers from the project "Big Basket"
-DELETE FROM employee_project_mapping WHERE project_id = 1 AND emp_id IN (
-	SELECT e.emp_id FROM employee AS e WHERE e.role_id=3 -- designers
-); 
+DELETE ep FROM employee_project_mapping AS ep 
+LEFT JOIN employee AS e ON ep.emp_id = e.emp_id 
+LEFT JOIN projects AS p ON ep.project_id = p.project_id 
+WHERE e.role_id = 3 AND p.project_id = 1;
 
 -- 8. Get the skill set of employees working with Big Basket.
 SELECT emp_list.emp_id, emp_list.Name, skill_list.Skillset 
@@ -199,13 +196,17 @@ LEFT JOIN projects AS p ON ep.project_id = p.project_id
 GROUP BY ep.project_id, p.name;
 
 -- 10. List the employees name in an order where the most skilled (total number of skills) employee comes first.  Show their skill count in each type (Framework & Language).
-
+SELECT e.name AS Name, COUNT(s.skill_id) AS Skill_Count,
+COUNT(IF(s.type='Framework',1,null)) AS Framework_Count,
+COUNT(IF(s.type='Language',1,null)) AS Language_Count FROM employee AS e 
+JOIN employee_skill_mapping AS es ON e.emp_id = es.emp_id 
+JOIN skills AS s ON es.skill_id = s.skill_id 
+GROUP BY e.name ORDER BY Skill_Count DESC; 
 
 -- 11. List employee names who don't have any allocation yet.
-SELECT filter.Name as Not_Allocated FROM (
-	SELECT e.name AS Name, ep.project_id AS Status FROM employee AS e 
-	LEFT JOIN employee_project_mapping AS ep ON e.emp_id = ep.emp_id WHERE e.role_id != 1
-) AS filter WHERE filter.Status IS NULL;
+SELECT e.name AS Name FROM employee AS e 
+LEFT JOIN employee_project_mapping AS ep ON e.emp_id = ep.emp_id 
+WHERE e.role_id != 1 AND ISNULL(ep.emp_id);
 
 -- 12. Update all project names with underscore.
 UPDATE projects SET name = CONCAT("_", name) WHERE project_id!=0; -- supplying always true condition

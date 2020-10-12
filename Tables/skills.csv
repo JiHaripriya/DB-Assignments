@@ -1,0 +1,9 @@
+skill_id,type,name
+1,Framework,Node
+2,Framework,React
+3,Framework,Laravel
+4,Framework,Vue
+5,Language,JavaScript
+6,Language,PHP
+7,Language,C#
+8,Language,Python
