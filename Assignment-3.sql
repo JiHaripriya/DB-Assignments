@@ -135,8 +135,8 @@ INSERT INTO projects (name, owner, start_date, end_date) VALUES
 -- 2.2 Assign 2 developers, 1 Designer and 1 Tester to that project
 INSERT INTO employee_project_mapping (emp_id, project_id) VALUES
 (3, 1), (5, 1), -- developer
-(6, 1),  -- designer
-(8, 1); -- tester
+(7, 1),  -- designer
+(9, 1); -- tester
 
 -- 3. List all the project managers in the company.
 SELECT emp_id, name AS Project_Manager_Name FROM employee WHERE role_id = 1;
@@ -177,7 +177,9 @@ GROUP BY project_id, name ORDER BY Resources DESC;
 UPDATE projects SET end_date =  DATE_ADD(end_date, INTERVAL 2 MONTH) WHERE project_id = 1;
 
 -- 7. Release the designers from the project "Big Basket"
-DELETE FROM employee_project_mapping WHERE project_id = 1;
+DELETE FROM employee_project_mapping WHERE project_id = 1 AND emp_id IN (
+	SELECT e.emp_id FROM employee AS e WHERE e.role_id=3 -- designers
+); 
 
 -- 8. Get the skill set of employees working with Big Basket.
 SELECT emp_list.emp_id, emp_list.Name, skill_list.Skillset 
@@ -191,9 +193,19 @@ LEFT JOIN ( -- Employee id and employee skills
 ) AS skill_list ON emp_list.emp_id = skill_list.emp_id;
 
 -- 9. Get  the list of employees (separated by commas. eg: Raju, Anju, Geetha) associated with each project
+SELECT ep.project_id, p.name as Project_Name, GROUP_CONCAT(e.name) AS Employees FROM employee_project_mapping AS ep 
+LEFT JOIN employee AS e ON ep.emp_id = e.emp_id
+LEFT JOIN projects AS p ON ep.project_id = p.project_id
+GROUP BY ep.project_id, p.name;
 
 -- 10. List the employees name in an order where the most skilled (total number of skills) employee comes first.  Show their skill count in each type (Framework & Language).
 
+
 -- 11. List employee names who don't have any allocation yet.
+SELECT filter.Name as Not_Allocated FROM (
+	SELECT e.name AS Name, ep.project_id AS Status FROM employee AS e 
+	LEFT JOIN employee_project_mapping AS ep ON e.emp_id = ep.emp_id WHERE e.role_id != 1
+) AS filter WHERE filter.Status IS NULL;
 
 -- 12. Update all project names with underscore.
+UPDATE projects SET name = CONCAT("_", name) WHERE project_id!=0; -- supplying always true condition
