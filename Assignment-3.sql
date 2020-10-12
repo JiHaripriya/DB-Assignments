@@ -78,7 +78,13 @@ CREATE TABLE IF NOT EXISTS `assignment3`.`projects` (
   `owner` INT NULL,
   `start_date` DATE NULL,
   `end_date` DATE NULL,
-  PRIMARY KEY (`project_id`))
+  PRIMARY KEY (`project_id`),
+  CONSTRAINT `owner`
+	FOREIGN KEY (`owner`)
+	REFERENCES `assignment3`.`employee` (`emp_id`)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
+)
 ENGINE = InnoDB;
 ALTER TABLE projects AUTO_INCREMENT = 1;
 
@@ -100,3 +106,43 @@ CREATE TABLE IF NOT EXISTS `assignment3`.`employee_project_mapping` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- ============================================================================================
+-- 										DATA EXERCISES
+-- ============================================================================================
+
+-- Specify roles
+INSERT INTO roles (name) VALUES ("Project Manager"), ("Developer"), ("Designer"), ("Tester");
+
+-- Specify skills Type ‘Framework’ may include  ‘Node’, ‘React’, etc and type ‘Language’ may include ‘JavaScript’, ‘PHP’, etc. Also an employee can have multiple skills.
+
+INSERT INTO skills (type, name) VALUES
+("Framework", "Node"), ("Framework", "React"), ("Framework", "Laravel"), ("Framework", "Vue"),
+("Language", "JavaScript"), ("Language", "PHP"), ("Language", "C#"), ("Language", "Python");
+
+-- 1. Add some employees with their role ("Project Manager", "Developer", "Designer" & "Tester"), according to the skills they have. 
+INSERT INTO employee (name, role_id) VALUES 
+("Nishin T. N", 1), ("Mohan Roy", 1),
+("J. Haripriya", 2), ("Nikhil Anil Kumar", 2), ("Ann Susan Baiju", 2),
+("Thejus Satheesan", 3), ("Sidharth Sujithlal", 3),
+("Aneesha Mariam Kunjumon", 4), ("Aparna Krishnakumar", 4);
+
+-- 2. Create a project called "Big Basket" under the PM "Mohan Roy". And assign 2 developers, 1 Designer and 1 Tester to that project.
+-- 2.1 Creating Project "Big Basket" under "Mohan Roy"
+SET @project_manager_id = (SELECT e.emp_id FROM employee AS e WHERE name="Mohan Roy" AND role_id=1); 
+INSERT INTO projects (name, owner, start_date, end_date) VALUES
+("Big Basket", @project_manager_id , "2020-10-12", "2021-02-08");
+
+-- 2.2 Assign 2 developers, 1 Designer and 1 Tester to that project
+INSERT INTO employee_project_mapping (emp_id, project_id) VALUES
+(3, 1), (5, 1), -- developer
+(6, 1),  -- designer
+(8, 1); -- tester
+
+-- 3. List all the project managers in the company.
+SELECT emp_id, name AS Project_Manager_Name FROM employee WHERE role_id = 1;
+
+-- 4. Get the count of  employees working as Developer in the project "Big Basket"
+SELECT COUNT(e.emp_id) AS Big_Basket_Dev_Count FROM employee_project_mapping AS ep 
+LEFT JOIN employee AS e ON ep.emp_id = e.emp_id
+WHERE ep.project_id = (SELECT project_id FROM projects WHERE name="Big Basket")  -- project id
+AND e.role_id=2;
