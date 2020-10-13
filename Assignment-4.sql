@@ -114,9 +114,11 @@ INSERT INTO donations (u_id, d_date) VALUES
 SELECT * FROM donations;
 
 -- 2. Check whether a user registered with blood Group B+ve and first name as ‘Bruce’
-SELECT EXISTS (SELECT * FROM users AS u
+SELECT IF(EXISTS
+(SELECT * FROM users AS u
 LEFT JOIN blood_group as b ON u.b_id = b.b_id
-WHERE u.fname="Bruce" AND b.type="B+ve") AS Status; -- Status = 0: User does not exist
+WHERE u.fname="Bruce" AND b.type="B+ve"),
+'User exist','User does not exist') AS Status;
 
 -- 3. Show the first_name, last_name, contact no of all users with bloog_group 'B+ve';
 SELECT u.fname, u.lname, u.phone FROM users AS u
