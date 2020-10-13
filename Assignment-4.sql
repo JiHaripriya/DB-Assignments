@@ -150,4 +150,4 @@ LEFT JOIN region AS r ON u.r_id = r.r_id
 GROUP BY r.name;
 
 -- 10. List out all users (first name,last name) based on their age from old to young
-SELECT * FROM users AS u ORDER BY u.dob;
+SELECT u.fname, u.lname FROM users AS u ORDER BY u.dob;
