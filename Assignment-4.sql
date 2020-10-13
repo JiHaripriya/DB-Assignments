@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `assignment4`.`region` (
   `name` VARCHAR(15) NULL,
   PRIMARY KEY (`r_id`))
 ENGINE = InnoDB;
+ALTER TABLE region AUTO_INCREMENT = 1;
 
 
 -- -----------------------------------------------------
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `assignment4`.`blood_group` (
   `type` VARCHAR(5) NULL,
   PRIMARY KEY (`b_id`))
 ENGINE = InnoDB;
-
+ALTER TABLE blood_group AUTO_INCREMENT = 1;
 
 -- -----------------------------------------------------
 -- Table `assignment4`.`users`
@@ -62,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `assignment4`.`users` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
+ALTER TABLE users AUTO_INCREMENT = 1001;
 
 -- -----------------------------------------------------
 -- Table `assignment4`.`donations`
@@ -78,7 +79,46 @@ CREATE TABLE IF NOT EXISTS `assignment4`.`donations` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+ALTER TABLE donations AUTO_INCREMENT = 1;
 
 -- =======================================================================================================================================================================
 -- 										DATA EXERCISES
 -- =======================================================================================================================================================================
+-- 1. Add data to all table's.
+
+-- 1.1 Region table data
+INSERT INTO region (name) VALUES ("North"), ("Middle") , ("South");
+SELECT * FROM region;
+
+-- 1.2 Blood group table data
+INSERT INTO blood_group (type) VALUES ("A+ve"), ("A-ve"), ("B+ve"), ("B-ve"), ("O+ve"), ("O-ve"), ("AB+ve"), ("AB-ve");
+SELECT * FROM blood_group;
+
+-- 1.3 User table data
+INSERT INTO users (fname, lname, dob, r_id, b_id, phone, email, password) VALUES
+("Ananya", "Vinod", "1999-10-13", 3, 3, "6234567890", "ananya@qburst.com", "ananya@123"), -- 1001
+("Ann", "Susan", "1998-08-10", 2, 3, "9234557890", "anns@qburst.com", "ann@123"),
+("Haripriya", "Jagannathan", "1999-09-17", 3, 5, "6238957968", "haripriya@qburst.com", "haripriya@123"),
+("Nikhil", "Anil Kumar", "1998-05-23", 2, 1, "8234560890", "nikhilanilkumar@qburst.com", "nikhil@123"),
+("Sidharth", "Sujithlal", "1998-10-23", 2, 1, "7234067890", "sidharths@qburst.com", "sidharth@123"),
+("Thejus", "Satheesan", "1997-02-13", 1, 7, "6642567890", "thejuss@qburst.com", "thejus@123");
+SELECT * FROM users;
+
+-- 1.4 Donation table data
+INSERT INTO donations (u_id, d_date) VALUES
+(1006, "2020-02-12"),
+(1004, "2020-05-16"),
+(1006, "2020-06-12"),
+(1000, "2020-10-05"),
+(1005, "2020-10-05");
+SELECT * FROM donations;
+
+-- 2. Check whether a user registered with blood Group B+ve and first name as ‘Bruce’
+-- 3. Show the first_name, last_name, contact no of all users with bloog_group 'B+ve';
+-- 4. Fetch first name, last name and contact no of all users with blood group 'A+ve' and located in the 'middle' region.
+-- 5. Fetch details of all transaction in one particular day
+-- 6. Update contact no of a user to '987698765' whose user id is 1001
+-- 7. Edit last_name of a user to 'speedster' whose id is 1002
+-- 8. Remove a user whose id is 1002 from our blood bank
+-- 9. Find the count of donors in each regions
+-- 10. List out all users (first name,last name) based on their age from old to young

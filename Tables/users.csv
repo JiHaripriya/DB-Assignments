@@ -1,0 +1,7 @@
+u_id,fname,lname,dob,r_id,b_id,phone,email,password
+1001,Ananya,Vinod,1999-10-13,3,3,6234567890,ananya@qburst.com,ananya@123
+1002,Ann,Susan,1998-08-10,2,3,9234557890,anns@qburst.com,ann@123
+1003,Haripriya,Jagannathan,1999-09-17,3,5,6238957968,haripriya@qburst.com,haripriya@123
+1004,Nikhil,"Anil Kumar",1998-05-23,2,1,8234560890,nikhilanilkumar@qburst.com,nikhil@123
+1005,Sidharth,Sujithlal,1998-10-23,2,1,7234067890,sidharths@qburst.com,sidharth@123
+1006,Thejus,Satheesan,1997-02-13,1,7,6642567890,thejuss@qburst.com,thejus@123
