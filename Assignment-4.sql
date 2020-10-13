@@ -109,16 +109,45 @@ INSERT INTO donations (u_id, d_date) VALUES
 (1006, "2020-02-12"),
 (1004, "2020-05-16"),
 (1006, "2020-06-12"),
-(1000, "2020-10-05"),
+(1001, "2020-10-05"),
 (1005, "2020-10-05");
 SELECT * FROM donations;
 
 -- 2. Check whether a user registered with blood Group B+ve and first name as ‘Bruce’
+SELECT EXISTS (SELECT * FROM users AS u
+LEFT JOIN blood_group as b ON u.b_id = b.b_id
+WHERE u.fname="Bruce" AND b.type="B+ve") AS Status; -- Status = 0: User does not exist
+
 -- 3. Show the first_name, last_name, contact no of all users with bloog_group 'B+ve';
+SELECT u.fname, u.lname, u.phone FROM users AS u
+LEFT JOIN blood_group AS b ON u.b_id = b.b_id
+WHERE b.type="B+ve";
+
 -- 4. Fetch first name, last name and contact no of all users with blood group 'A+ve' and located in the 'middle' region.
+SELECT u.fname, u.lname, u.phone FROM users AS u
+LEFT JOIN blood_group AS b ON u.b_id = b.b_id
+LEFT JOIN region AS r ON u.r_id = r.r_id
+WHERE b.type="A+ve" AND r.name="Middle";
+
 -- 5. Fetch details of all transaction in one particular day
+SELECT d.d_id AS Donation_id, u.fname AS First_name, u.lname AS Last_name, u.phone AS Phone_number
+FROM donations AS d 
+RIGHT JOIN users AS u ON d.u_id = u.u_id 
+WHERE d.d_date = "2020-10-05";
+
 -- 6. Update contact no of a user to '987698765' whose user id is 1001
+UPDATE users SET phone = '987698765' WHERE u_id = 1001;
+
 -- 7. Edit last_name of a user to 'speedster' whose id is 1002
+UPDATE users SET lname = 'speedster' WHERE u_id = 1002;
+
 -- 8. Remove a user whose id is 1002 from our blood bank
+DELETE FROM users WHERE u_id = 1002;
+
 -- 9. Find the count of donors in each regions
+SELECT r.name AS Region_name, COUNT(*) AS Donor_count FROM users AS u
+LEFT JOIN region AS r ON u.r_id = r.r_id
+GROUP BY r.name;
+
 -- 10. List out all users (first name,last name) based on their age from old to young
+SELECT * FROM users AS u ORDER BY u.dob;
