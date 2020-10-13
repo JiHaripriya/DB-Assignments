@@ -1,17 +1,20 @@
 # DB-Assignments
 Repository for all the DB Assignments
 
-## Assignment 3
+## Assignment 4
 
-1. Add some employees with their role ("Project Manager", "Developer", "Designer" & "Tester"), according to the skills they have. 
-2. Create a project called "Big Basket" under the PM "Mohan Roy". And assign 2 developers, 1 Designer and 1 Tester to that project.
-3. List all the project managers in the company.
-4. Get the count of  employees working as Developer in the project "Big Basket"
-5. Get the list of  projects, with total number resources in the descending order
-6. Extend the development duration of "Big Basket" by one month. 
-7. Release the designers from the project "Big Basket"
-8. Get the skill set of employees working with Big Basket.
-9. Get  the list of employees (separated by commas. eg: Raju, Anju, Geetha) associated with each project
-10. List the employees name in an order where the most skilled (total number of skills) employee comes first.  Show their skill count in each type (Framework & Language).
-11. List employee names who don't have any allocation yet.
-12. Update all project names with underscore.
+1. Add data to all table's.
+    > Region: north,middle,south
+    > Blood groups: A+ve,A-ve,B+ve,B-ve,O+ve,O-ve,AB+ve,AB-ve
+    > Users: Add some users.
+    > Maintain a transaction table to keep track of all donations
+2. Check whether a user registered with blood Group B+ve and first name as ‘Bruce’
+3. Show the first_name, last_name, contact no of all users with bloog_group 'B+ve';
+4. Fetch first name, last name and contact no of all users with blood group 'A+ve' and located in the 'middle' region.
+5. Fetch details of all transaction in one particular day
+6. Update contact no of a user to '987698765' whose user id is 1001
+7. Edit last_name of a user to 'speedster' whose id is 1002
+8. Remove a user whose id is 1002 from our blood bank
+9. Find the count of donors in each regions
+10. List out all users(first name,last name) based on their age from old to young
+
